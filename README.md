@@ -20,13 +20,13 @@ The Tripo3D Model Downloader is a Python script designed to automate the process
 1. **Clone the Repository**: Clone this repository to your local machine.
 
     ```
-    git clone https://github.com/your-username/tripo3d-model-downloader.git
+    git clone https://github.com/Dragoy/triposr_light.git
     ```
 
 2. **Install Dependencies**: Navigate to the project directory and install the required dependencies using pip.
 
     ```
-    cd tripo3d-model-downloader
+    cd triposr_light
     pip install -r requirements.txt
     ```
 
