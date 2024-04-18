@@ -79,7 +79,6 @@ def animate_and_download(model_task_id, api_key):
             download_result(animation_task_id, api_key, is_animated=True)
             print("Animation task is completed and results are downloaded successfully!")
 
-
 def animate_model(task_id, api_key):
     url = "https://api.tripo3d.ai/v2/openapi/task"
     data = {"type": "animate_model", "original_model_task_id": task_id}
@@ -130,13 +129,8 @@ def download_result(task_id, api_key, is_animated=True):
     else:
         print("Error:", response.text)
 
-
-
-
-
-
 def main():
-    api_key = "tsk_LvVY3wXgARlWqTAY9AVVBD5s4o4lr6L6kT1-Nk_VBDA"  # Замените на ваш API ключ
+    api_key = "YOUR_API_KEY"  # Замените на ваш API ключ
     input_folder = "input"
     image_path = choose_image(input_folder)
     print("Selected image:", image_path)
