@@ -1,8 +1,8 @@
-# Tripo3D Model Downloader
+# Tripo3D API Model Fetcher
 
 ## Overview
 
-The Tripo3D Model Downloader is a Python script designed to automate the process of generating and downloading 3D models and animations using the Tripo3D API. It allows users to generate 3D models from images, animate them if desired, and download the resulting models and animations.
+The Tripo3D API Model Fetcher is a Python script designed to automate the process of generating and downloading 3D models and animations using the Tripo3D API. It allows users to generate 3D models from images, animate them if desired, and download the resulting models and animations.
 
 ## Features
 
