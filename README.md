@@ -46,10 +46,4 @@ The Tripo3D Model Downloader is a Python script designed to automate the process
 
 Contributions are welcome! If you encounter any issues or have suggestions for improvements, please feel free to open an issue or submit a pull request.
 
-## License
-
-This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
-
 ---
-
-Feel free to customize this `README.md` with additional information or formatting as needed.
