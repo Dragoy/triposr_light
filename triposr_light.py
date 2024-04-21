@@ -11,10 +11,12 @@ def choose_image(input_folder):
     """
     if not os.path.exists(input_folder):
         os.makedirs(input_folder)
-        print(f"Folder '{input_folder}' created. Please put your images in JPEG format into this folder.")
+        print(f"Folder '{input_folder}' created. Please put your images in supported formats (PNG, JPG/JPEG, WebP) into this folder.")
         exit()
 
-    images = [f for f in os.listdir(input_folder) if f.endswith('.jpg')]
+    supported_formats = ['png', 'jpg', 'jpeg', 'webp']
+    images = [f for f in os.listdir(input_folder) if f.lower().endswith(tuple(supported_formats))]
+    
     print("Choose image:")
     for i, img in enumerate(images, 1):
         print(f"{i}. {img}")
@@ -26,10 +28,8 @@ def choose_image(input_folder):
             return os.path.join(input_folder, images[choice - 1])
         else:
             print("Invalid choice. Please enter a number within the range.")
-            return choose_image(input_folder)
     except ValueError:
-        print("Invalid choice. Please enter a number.")
-        return choose_image(input_folder)
+        print("Invalid input. Please enter a valid number.")
 
 def generate_model(image_path, api_key):
     """
@@ -38,9 +38,14 @@ def generate_model(image_path, api_key):
     with open(image_path, 'rb') as file:
         image_data = base64.b64encode(file.read()).decode('utf-8')
 
+    file_extension = image_path.split('.')[-1].lower()
+
+    if file_extension not in ['png', 'jpg', 'jpeg', 'webp']:
+        raise ValueError("Unsupported file format. Only PNG, JPG/JPEG, and WebP are supported.")
+
     url = "https://api.tripo3d.ai/v2/openapi/task"
     headers = {"Content-Type": "application/json", "Authorization": f"Bearer {api_key}"}
-    data = {"type": "image_to_model", "file": {"type": "jpg", "data": image_data}}
+    data = {"type": "image_to_model", "file": {"type": file_extension, "data": image_data}}
     response = requests.post(url, headers=headers, json=data)
     
     if response.status_code == 200:
@@ -130,7 +135,7 @@ def download_result(task_id, api_key, is_animated=True):
         print("Error:", response.text)
 
 def main():
-    api_key = "YOUR_API_KEY"  # Замените на ваш API ключ
+    api_key = "API"  # Замените на ваш API ключ
     input_folder = "input"
     image_path = choose_image(input_folder)
     print("Selected image:", image_path)
@@ -149,4 +154,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-
