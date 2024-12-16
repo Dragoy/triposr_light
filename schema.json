@@ -1,0 +1,961 @@
+{
+    "openapi": "3.0.1",
+    "info": {
+      "title": "Tripo 3D Generation",
+      "description": "use tripo to generate 3d models",
+      "version": "1.0.0"
+    },
+    "servers": [
+      {
+        "url": "https://api.tripo3d.ai/v2/openapi"
+      }
+    ],
+    "paths": {
+      "/task/{task_id}": {
+        "get": {
+          "summary": "use the task_id created by createTask to get the status of a task",
+          "operationId": "getTask",
+          "parameters": [
+            {
+              "name": "task_id",
+              "in": "path",
+              "required": true,
+              "schema": {
+                "type": "string"
+              }
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "succeed",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object",
+                    "properties": {
+                      "code": {
+                        "type": "integer",
+                        "enum": [
+                          0
+                        ]
+                      },
+                      "data": {
+                        "$ref": "#/components/schemas/Task"
+                      }
+                    },
+                    "required": [
+                      "code",
+                      "data"
+                    ]
+                  }
+                }
+              }
+            },
+            "400": {
+              "description": "failed",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object",
+                    "properties": {
+                      "code": {
+                        "type": "integer",
+                        "enum": [
+                          2000,
+                          2001
+                        ]
+                      },
+                      "message": {
+                        "type": "string"
+                      },
+                      "suggestion": {
+                        "type": "string"
+                      }
+                    },
+                    "required": [
+                      "code",
+                      "message",
+                      "suggestion"
+                    ]
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "/upload": {
+        "post": {
+          "summary": "upload a file",
+          "operationId": "uploadFile",
+          "requestBody": {
+            "content": {
+              "multipart/form-data": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "file": {
+                      "type": "string",
+                      "format": "binary"
+                    }
+                  },
+                  "required": [
+                    "file"
+                  ]
+                },
+                "encoding": {
+                  "profileImage": {
+                    "contentType": "image/png, image/jpeg"
+                  }
+                }
+              }
+            }
+          },
+          "responses": {
+            "200": {
+              "description": "succeed",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object",
+                    "properties": {
+                      "code": {
+                        "type": "integer",
+                        "enum": [
+                          0
+                        ]
+                      },
+                      "data": {
+                        "type": "object",
+                        "properties": {
+                          "image_token": {
+                            "type": "string"
+                          }
+                        },
+                        "required": [
+                          "image_token"
+                        ]
+                      }
+                    },
+                    "required": [
+                      "code",
+                      "data"
+                    ]
+                  }
+                }
+              }
+            },
+            "400": {
+              "description": "failed",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object",
+                    "properties": {
+                      "code": {
+                        "type": "integer",
+                        "enum": [
+                          2000,
+                          2002,
+                          2004
+                        ]
+                      },
+                      "message": {
+                        "type": "string"
+                      },
+                      "suggestion": {
+                        "type": "string"
+                      }
+                    },
+                    "required": [
+                      "code",
+                      "message",
+                      "suggestion"
+                    ]
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "/task": {
+        "post": {
+          "summary": "create a task",
+          "operationId": "createTask",
+          "requestBody": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "oneOf": [
+                    {
+                      "type": "object",
+                      "properties": {
+                        "type": {
+                          "type": "string",
+                          "enum": [
+                            "text_to_model"
+                          ]
+                        },
+                        "prompt": {
+                          "type": "string",
+                          "maxLength": 1024
+                        },
+                        "negative_prompt": {
+                          "type": "string",
+                          "maxLength": 1024
+                        },
+                        "model_version": {
+                          "type": "string",
+                          "enum": [
+                            "default",
+                            "v1.3-20240522",
+                            "v1.4-20240625",
+                            "v2.0-20240919"
+                          ],
+                          "default": "default"
+                        },
+                        "face_limit": {
+                          "type": "integer"
+                        },
+                        "texture": {
+                          "type": "boolean",
+                          "default": true
+                        },
+                        "pbr": {
+                          "type": "boolean",
+                          "default": true
+                        },
+                        "text_seed": {
+                          "type": "integer"
+                        },
+                        "model_seed": {
+                          "type": "integer"
+                        },
+                        "texture_seed": {
+                          "type": "integer"
+                        },
+                        "texture_quality": {
+                          "type": "string",
+                          "enum": [
+                            "standard",
+                            "detailed"
+                          ],
+                          "default": "standard"
+                        },
+                        "style": {
+                          "type": "string",
+                          "enum": [
+                            "person:person2cartoon",
+                            "animal:venom",
+                            "object:clay",
+                            "object:steampunk",
+                            "object:christmas",
+                            "object:barbie"
+                          ]
+                        },
+                        "auto_size": {
+                          "type": "boolean",
+                          "default": false
+                        }
+                      },
+                      "required": [
+                        "type",
+                        "prompt"
+                      ]
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "type": {
+                          "type": "string",
+                          "enum": [
+                            "image_to_model"
+                          ]
+                        },
+                        "file": {
+                          "type": "object",
+                          "properties": {
+                            "type": {
+                              "type": "string"
+                            },
+                            "file_token": {
+                              "type": "string"
+                            }
+                          },
+                          "required": [
+                            "type",
+                            "file_token"
+                          ]
+                        },
+                        "model_version": {
+                          "type": "string",
+                          "enum": [
+                            "default",
+                            "v1.3-20240522",
+                            "v1.4-20240625",
+                            "v2.0-20240919"
+                          ],
+                          "default": "default"
+                        },
+                        "face_limit": {
+                          "type": "integer"
+                        },
+                        "texture": {
+                          "type": "boolean",
+                          "default": true
+                        },
+                        "pbr": {
+                          "type": "boolean",
+                          "default": true
+                        },
+                        "model_seed": {
+                          "type": "integer"
+                        },
+                        "texture_seed": {
+                          "type": "integer"
+                        },
+                        "texture_quality": {
+                          "type": "string",
+                          "enum": [
+                            "standard",
+                            "detailed"
+                          ],
+                          "default": "standard"
+                        },
+                        "texture_alignment": {
+                          "type": "string",
+                          "enum": [
+                            "original_image",
+                            "geometry"
+                          ],
+                          "default": "original_image"
+                        },
+                        "style": {
+                          "type": "string",
+                          "enum": [
+                            "person:person2cartoon",
+                            "animal:venom",
+                            "object:clay",
+                            "object:steampunk",
+                            "object:christmas",
+                            "object:barbie"
+                          ]
+                        },
+                        "auto_size": {
+                          "type": "boolean",
+                          "default": false
+                        },
+                        "orientation": {
+                          "type": "string",
+                          "enum": [
+                            "align_image",
+                            "default"
+                          ],
+                          "default": "default"
+                        }
+                      },
+                      "required": [
+                        "type",
+                        "file"
+                      ]
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "type": {
+                          "type": "string",
+                          "enum": [
+                            "multiview_to_model"
+                          ]
+                        },
+                        "files": {
+                          "type": "array",
+                          "items": {
+                            "type": "object",
+                            "properties": {
+                              "type": {
+                                "type": "string"
+                              },
+                              "file_token": {
+                                "type": "string"
+                              }
+                            },
+                            "required": [
+                              "type",
+                              "file_token"
+                            ]
+                          }
+                        },
+                        "mode": {
+                          "type": "string",
+                          "enum": [
+                            "LEFT",
+                            "RIGHT"
+                          ]
+                        },
+                        "model_version": {
+                          "type": "string",
+                          "enum": [
+                            "default",
+                            "v2.0-20240919",
+                            "v1.4-20240625"
+                          ],
+                          "default": "default"
+                        },
+                        "orthographic_projection": {
+                          "type": "boolean",
+                          "default": false
+                        },
+                        "face_limit": {
+                          "type": "integer"
+                        },
+                        "texture": {
+                          "type": "boolean",
+                          "default": true
+                        },
+                        "pbr": {
+                          "type": "boolean",
+                          "default": true
+                        },
+                        "model_seed": {
+                          "type": "integer"
+                        },
+                        "texture_seed": {
+                          "type": "integer"
+                        },
+                        "texture_quality": {
+                          "type": "string",
+                          "enum": [
+                            "standard",
+                            "detailed"
+                          ],
+                          "default": "standard"
+                        },
+                        "texture_alignment": {
+                          "type": "string",
+                          "enum": [
+                            "original_image",
+                            "geometry"
+                          ],
+                          "default": "original_image"
+                        },
+                        "auto_size": {
+                          "type": "boolean",
+                          "default": false
+                        },
+                        "orientation": {
+                          "type": "string",
+                          "enum": [
+                            "align_image",
+                            "default"
+                          ],
+                          "default": "default"
+                        }
+                      },
+                      "required": [
+                        "type",
+                        "files"
+                      ]
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "type": {
+                          "type": "string",
+                          "enum": [
+                            "texture_model"
+                          ]
+                        },
+                        "texture": {
+                          "type": "boolean",
+                          "default": true
+                        },
+                        "pbr": {
+                          "type": "boolean",
+                          "default": true
+                        },
+                        "model_seed": {
+                          "type": "integer"
+                        },
+                        "texture_seed": {
+                          "type": "integer"
+                        },
+                        "texture_quality": {
+                          "type": "string",
+                          "enum": [
+                            "standard",
+                            "detailed"
+                          ]
+                        },
+                        "texture_alignment": {
+                          "type": "string",
+                          "enum": [
+                            "original_image",
+                            "geometry"
+                          ],
+                          "default": "original_image"
+                        },
+                        "original_model_task_id": {
+                          "type": "string"
+                        }
+                      },
+                      "required": [
+                        "type",
+                        "original_model_task_id"
+                      ]
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "type": {
+                          "type": "string",
+                          "enum": [
+                            "refine_model"
+                          ]
+                        },
+                        "draft_model_task_id": {
+                          "type": "string"
+                        }
+                      },
+                      "required": [
+                        "type",
+                        "draft_model_task_id"
+                      ]
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "type": {
+                          "type": "string",
+                          "enum": [
+                            "animate_prerigcheck"
+                          ]
+                        },
+                        "original_model_task_id": {
+                          "type": "string"
+                        }
+                      },
+                      "required": [
+                        "type",
+                        "original_model_task_id"
+                      ]
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "type": {
+                          "type": "string",
+                          "enum": [
+                            "animate_rig"
+                          ]
+                        },
+                        "original_model_task_id": {
+                          "type": "string"
+                        },
+                        "out_format": {
+                          "type": "string",
+                          "enum": [
+                            "glb",
+                            "fbx"
+                          ],
+                          "default": "glb"
+                        }
+                      },
+                      "required": [
+                        "type",
+                        "original_model_task_id"
+                      ]
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "type": {
+                          "type": "string",
+                          "enum": [
+                            "animate_retarget"
+                          ]
+                        },
+                        "original_model_task_id": {
+                          "type": "string"
+                        },
+                        "out_format": {
+                          "type": "string",
+                          "enum": [
+                            "glb",
+                            "fbx"
+                          ],
+                          "default": "glb"
+                        },
+                        "animation": {
+                          "type": "string",
+                          "enum": [
+                            "preset:idle",
+                            "preset:walk",
+                            "preset:climb",
+                            "preset:jump",
+                            "preset:run",
+                            "preset:slash",
+                            "preset:shoot",
+                            "preset:hurt",
+                            "preset:fall",
+                            "preset:turn"
+                          ]
+                        },
+                        "bake_animation": {
+                          "type": "boolean",
+                          "default": true
+                        }
+                      },
+                      "required": [
+                        "type",
+                        "original_model_task_id",
+                        "animation"
+                      ]
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "type": {
+                          "type": "string",
+                          "enum": [
+                            "stylize_model"
+                          ]
+                        },
+                        "style": {
+                          "type": "string",
+                          "enum": [
+                            "lego",
+                            "voxel",
+                            "voronoi",
+                            "minecraft"
+                          ]
+                        },
+                        "original_model_task_id": {
+                          "type": "string"
+                        },
+                        "block_size": {
+                          "type": "integer",
+                          "default": 80
+                        }
+                      },
+                      "required": [
+                        "type",
+                        "style",
+                        "original_model_task_id"
+                      ]
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "type": {
+                          "type": "string",
+                          "enum": [
+                            "convert_model"
+                          ]
+                        },
+                        "format": {
+                          "type": "string",
+                          "enum": [
+                            "GLTF",
+                            "USDZ",
+                            "FBX",
+                            "OBJ",
+                            "STL",
+                            "3MF"
+                          ]
+                        },
+                        "original_model_task_id": {
+                          "type": "string"
+                        },
+                        "quad": {
+                          "type": "boolean",
+                          "default": false
+                        },
+                        "force_symmetry": {
+                          "type": "boolean",
+                          "default": false
+                        },
+                        "face_limit": {
+                          "type": "integer",
+                          "default": 10000
+                        },
+                        "flatten_bottom": {
+                          "type": "boolean",
+                          "default": false
+                        },
+                        "flatten_bottom_threshold": {
+                          "type": "number",
+                          "default": 0.01
+                        },
+                        "texture_size": {
+                          "type": "integer",
+                          "default": 4096
+                        },
+                        "texture_format": {
+                          "type": "string",
+                          "enum": [
+                            "BMP",
+                            "DPX",
+                            "HDR",
+                            "JPEG",
+                            "OPEN_EXR",
+                            "PNG",
+                            "TARGA",
+                            "TIFF",
+                            "WEBP"
+                          ],
+                          "default": "JPEG"
+                        },
+                        "pivot_to_center_bottom": {
+                          "type": "boolean",
+                          "default": false
+                        }
+                      },
+                      "required": [
+                        "type",
+                        "format",
+                        "original_model_task_id"
+                      ]
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "responses": {
+            "200": {
+              "description": "succeed",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/SuccessTask"
+                  }
+                }
+              }
+            },
+            "400": {
+              "description": "failed",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object",
+                    "properties": {
+                      "code": {
+                        "type": "integer",
+                        "enum": [
+                          2000,
+                          2002,
+                          2003,
+                          2004,
+                          2006,
+                          2007,
+                          2008,
+                          2010
+                        ]
+                      },
+                      "message": {
+                        "type": "string"
+                      },
+                      "suggestion": {
+                        "type": "string"
+                      }
+                    },
+                    "required": [
+                      "code",
+                      "message",
+                      "suggestion"
+                    ]
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "/user/balance": {
+        "get": {
+          "summary": "get user balance",
+          "operationId": "getBalance",
+          "responses": {
+            "200": {
+              "description": "succeed",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object",
+                    "properties": {
+                      "code": {
+                        "type": "integer",
+                        "enum": [
+                          0
+                        ]
+                      },
+                      "data": {
+                        "$ref": "#/components/schemas/Balance"
+                      }
+                    },
+                    "required": [
+                      "code",
+                      "data"
+                    ]
+                  }
+                }
+              }
+            },
+            "500": {
+              "description": "failed",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object",
+                    "properties": {
+                      "code": {
+                        "type": "integer",
+                        "enum": [
+                          1001
+                        ]
+                      },
+                      "message": {
+                        "type": "string"
+                      },
+                      "suggestion": {
+                        "type": "string"
+                      }
+                    },
+                    "required": [
+                      "code",
+                      "message",
+                      "suggestion"
+                    ]
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "components": {
+      "schemas": {
+        "Task": {
+          "type": "object",
+          "properties": {
+            "task_id": {
+              "type": "string"
+            },
+            "type": {
+              "type": "string"
+            },
+            "status": {
+              "type": "string",
+              "enum": [
+                "queued",
+                "running",
+                "success",
+                "failed",
+                "cancelled",
+                "unknown",
+                "banned",
+                "expired"
+              ]
+            },
+            "input": {
+              "type": "object"
+            },
+            "output": {
+              "type": "object",
+              "properties": {
+                "model": {
+                  "type": "string"
+                },
+                "base_model": {
+                  "type": "string"
+                },
+                "pbr_model": {
+                  "type": "string"
+                },
+                "rendered_image": {
+                  "type": "string"
+                }
+              }
+            },
+            "progress": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 100
+            },
+            "create_time": {
+              "type": "integer"
+            }
+          },
+          "required": [
+            "task_id",
+            "type",
+            "status",
+            "input",
+            "output",
+            "progress",
+            "create_time"
+          ]
+        },
+        "SuccessTask": {
+          "type": "object",
+          "properties": {
+            "code": {
+              "type": "integer",
+              "enum": [
+                0
+              ]
+            },
+            "data": {
+              "type": "object",
+              "properties": {
+                "task_id": {
+                  "description": "used for getTask",
+                  "type": "string"
+                }
+              },
+              "required": [
+                "task_id"
+              ]
+            }
+          },
+          "required": [
+            "code",
+            "data"
+          ]
+        },
+        "Balance": {
+          "type": "object",
+          "properties": {
+            "code": {
+              "type": "integer",
+              "enum": [
+                0
+              ]
+            },
+            "data": {
+              "type": "object",
+              "properties": {
+                "balance": {
+                  "type": "number"
+                },
+                "frozen": {
+                  "type": "number"
+                }
+              },
+              "required": [
+                "balance",
+                "frozen"
+              ]
+            }
+          },
+          "required": [
+            "code",
+            "data"
+          ]
+        }
+      }
+    }
+  }

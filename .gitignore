@@ -1,0 +1,47 @@
+# Project specific
+input/*
+!input/test.jpg
+output/
+*.glb
+*.zip
+*.mp4
+*.webp
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# Virtual Environment
+venv/
+env/
+ENV/
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+.project
+.pydevproject
+
+# OS specific
+.DS_Store
+Thumbs.db 
