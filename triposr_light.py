@@ -236,7 +236,7 @@ def download_result(task_id, api_key, is_animated=True):
         print("Error:", response.text)
 
 def main():
-    api_key = "tsk_1YNclg9JGliLfWkTA1oHKf4bEhpjElkZMvi0569d0EE"  # Замените на ваш API ключ
+    api_key = ""  # Замените на ваш API ключ
     input_folder = "input"
     image_path = choose_image(input_folder)
     print("Selected image:", image_path)
