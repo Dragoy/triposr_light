@@ -4,6 +4,7 @@ import base64
 import time
 import wget
 from datetime import datetime
+from dotenv import load_dotenv
 
 def choose_image(input_folder):
     """
@@ -185,49 +186,48 @@ def download_result(task_id, api_key, is_animated=True):
     if response.status_code == 200:
         data = response.json().get("data", {})
         output = data.get("output")
-        print(f"Output data received: {output}")  # Вывод данных для диагностики
+        print(f"Output data received: {output}")
 
         if output:
-            # Создаем папку output если её нет
             output_dir = "output"
             if not os.path.exists(output_dir):
                 os.makedirs(output_dir)
             
-            # Создаем подпапку с датой и временем внутри output
             folder_name = os.path.join(output_dir, datetime.now().strftime("%y%m%d_%H_%M_%S"))
             os.makedirs(folder_name, exist_ok=True)
 
             if is_animated:
                 model_url = output.get("model")
                 if model_url:
-                    model_zip_filename = os.path.join(folder_name, "model.zip")
+                    original_name = model_url.split('/')[-1].split('?')[0]
+                    model_zip_filename = os.path.join(folder_name, original_name)
                     wget.download(model_url, model_zip_filename)
                     print(f"\nAnimated model downloaded to {model_zip_filename}")
 
                 video_url = output.get("rendered_video")
                 if video_url:
-                    video_filename = os.path.join(folder_name, "video.mp4")
+                    original_name = video_url.split('/')[-1].split('?')[0]
+                    video_filename = os.path.join(folder_name, original_name)
                     wget.download(video_url, video_filename)
                     print(f"\nVideo downloaded to {video_filename}")
             else:
-                # Пробуем получить обычную модель
                 model_url = output.get("model")
                 if not model_url:
-                    # Если нет обычной модели, пробуем получить PBR модель
                     model_url = output.get("pbr_model")
                 
                 if model_url:
-                    static_model_filename = os.path.join(folder_name, "model.glb")
+                    original_name = model_url.split('/')[-1].split('?')[0]
+                    static_model_filename = os.path.join(folder_name, original_name)
                     print(f"\nDownloading model from: {model_url}")
                     wget.download(model_url, static_model_filename)
                     print(f"\nStatic model downloaded to {static_model_filename}")
                 else:
                     print("\nError: No model URL found in the output")
 
-                # Скачиваем превью изображение, если оно есть
                 image_url = output.get("rendered_image")
                 if image_url:
-                    image_filename = os.path.join(folder_name, "preview.webp")
+                    original_name = image_url.split('/')[-1].split('?')[0]
+                    image_filename = os.path.join(folder_name, original_name)
                     wget.download(image_url, image_filename)
                     print(f"\nPreview image downloaded to {image_filename}")
         else:
@@ -235,8 +235,28 @@ def download_result(task_id, api_key, is_animated=True):
     else:
         print("Error:", response.text)
 
+def load_api_key():
+    """
+    Загружает API ключ из переменных окружения или запрашивает у пользователя
+    """
+    load_dotenv()  # загружаем переменные из .env файла
+    api_key = os.getenv('TRIPO_API_KEY')
+    
+    if not api_key:
+        print("API key not found in .env file")
+        api_key = input("Please enter your Tripo3D API key: ").strip()
+        
+        # Предложим сохранить ключ в .env
+        save = input("Would you like to save this API key to .env file? (y/N): ").lower()
+        if save == 'y':
+            with open('.env', 'w') as f:
+                f.write(f'TRIPO_API_KEY={api_key}')
+            print("API key saved to .env file")
+    
+    return api_key
+
 def main():
-    api_key = ""  # Замените на ваш API ключ
+    api_key = load_api_key()
     input_folder = "input"
     image_path = choose_image(input_folder)
     print("Selected image:", image_path)
